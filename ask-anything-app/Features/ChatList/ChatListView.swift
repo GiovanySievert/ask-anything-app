@@ -1,18 +1,13 @@
 import SwiftUI
 
 struct ChatListView: View {
-    private let viewModel = ChatListViewModel()
+  let chats: [ChatList]
 
-    var body: some View {
-        NavigationStack {
-            List(viewModel.chats) { chat in
-                ChatListRowView(chat: chat)
-            }
-            .navigationTitle("Chats")
-        }
+  var body: some View {
+    List(chats) { chat in
+      ChatListRowView(chat: chat)
     }
-}
-
-#Preview {
-    ChatListView()
+    .presentationDetents([.medium, .large])
+    .presentationDragIndicator(.visible)
+  }
 }

@@ -9,9 +9,9 @@ import SwiftUI
 
 @main
 struct ask_anything_appApp: App {
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-        }
+  var body: some Scene {
+    WindowGroup {
+      ContentView()
     }
+  }
 }

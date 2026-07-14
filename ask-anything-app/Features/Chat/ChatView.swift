@@ -1,9 +1,17 @@
 import SwiftUI
 
 struct ChatView: View {
-  @State private var viewModel = ChatViewModel()
-  @State private var animatedMessageIDs: Set<UUID> = []
+  @State private var viewModel: ChatViewModel
+  @State private var animatedMessageIDs: Set<UUID>
   @State private var isShowingChatList = false
+  @FocusState private var isInputFocused: Bool
+
+  @MainActor
+  init(viewModel: ChatViewModel? = nil) {
+    let viewModel = viewModel ?? ChatViewModel()
+    _viewModel = State(initialValue: viewModel)
+    _animatedMessageIDs = State(initialValue: Set(viewModel.messages.map(\.id)))
+  }
 
   var body: some View {
     @Bindable var viewModel = viewModel
@@ -58,26 +66,36 @@ struct ChatView: View {
                   }
 
                   Color.clear
-                    .frame(height: 20)
                     .id("messagesBottom")
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 20)
               }
+							.scrollIndicators(.hidden)
+              .scrollDismissesKeyboard(.interactively)
               .onChange(of: viewModel.messages.count) { _, _ in
                 scrollToMessagesBottom(with: proxy)
               }
               .onChange(of: animatedMessageIDs.count) { _, _ in
                 scrollToMessagesBottom(with: proxy)
               }
+              .onChange(of: isInputFocused) { _, isFocused in
+                if isFocused {
+                  scrollToMessagesBottom(with: proxy)
+                }
+              }
             }
           }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-        ChatInputBar(message: $viewModel.message, onSend: sendMessage)
-          .padding(.horizontal, 16)
-          .padding(.bottom, 18)
+        .contentShape(Rectangle())
+        .onTapGesture {
+          isInputFocused = false
+        }
+				.safeAreaInset(edge: .bottom) {
+					ChatInputBar(message: $viewModel.message, onSend: sendMessage, isFocused: $isInputFocused)
+						.padding(.bottom, 18)
+				}
       }
       .sheet(isPresented: $isShowingChatList) {
         ChatListView(chats: ChatList.samples)
@@ -108,5 +126,5 @@ struct ChatView: View {
 }
 
 #Preview {
-  ChatView()
+  ChatView(viewModel: ChatViewModel(messages: ChatMessage.samples))
 }

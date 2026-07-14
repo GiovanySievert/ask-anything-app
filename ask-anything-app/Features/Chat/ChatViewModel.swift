@@ -8,6 +8,13 @@ final class ChatViewModel {
   var messages: [ChatMessage] = []
   var isShowingEmptyState = true
 
+  init() {}
+
+  init(messages: [ChatMessage]) {
+    self.messages = messages
+    self.isShowingEmptyState = messages.isEmpty
+  }
+
   func sendMessage() -> ChatMessage? {
     guard let text = normalizedMessageText() else { return nil }
 

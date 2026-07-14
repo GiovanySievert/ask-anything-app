@@ -4,30 +4,28 @@ struct ChatInputBar: View {
   @Binding var message: String
   let onSend: () -> Void
 
+  @FocusState.Binding var isFocused: Bool
+
   var body: some View {
     HStack(spacing: 12) {
-      ZStack {
-        RoundedRectangle(cornerRadius: 16)
-          .glassEffect(
-            .regular,
-            in: RoundedRectangle(cornerRadius: 16)
-          )
-          .overlay {
-            RoundedRectangle(cornerRadius: 16)
-              .stroke(.black.opacity(0.18), lineWidth: 1)
-          }
-          .allowsHitTesting(false)
-
-        TextField("Ask anything", text: $message)
-          .textInputAutocapitalization(.sentences)
-          .autocorrectionDisabled()
-          .submitLabel(.send)
-          .foregroundStyle(.white)
-          .padding(.horizontal, 16)
-          .onSubmit(onSend)
-      }
-      .frame(height: 52)
-      .clipShape(RoundedRectangle(cornerRadius: 16))
+      TextField("Ask anything", text: $message)
+        .textInputAutocapitalization(.sentences)
+        .autocorrectionDisabled()
+        .textContentType(.none)
+        .submitLabel(.send)
+        .foregroundStyle(.white)
+        .focused($isFocused)
+        .onSubmit(onSend)
+        .padding(.horizontal, 16)
+        .frame(height: 52)
+        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 16))
+        .overlay {
+          RoundedRectangle(cornerRadius: 16)
+            .stroke(.black.opacity(0.18), lineWidth: 1)
+            .allowsHitTesting(false)
+        }
+        .contentShape(RoundedRectangle(cornerRadius: 16))
+        .onTapGesture { isFocused = true }
 
       Button {
         onSend()
@@ -58,8 +56,9 @@ struct ChatInputBar: View {
 
 #Preview {
   @Previewable @State var message = ""
+  @Previewable @FocusState var isFocused: Bool
 
-  ChatInputBar(message: $message, onSend: {})
+  ChatInputBar(message: $message, onSend: {}, isFocused: $isFocused)
     .padding()
     .background(.black)
 }
