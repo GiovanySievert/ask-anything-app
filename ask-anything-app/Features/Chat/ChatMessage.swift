@@ -13,7 +13,7 @@ struct ChatMessage: Identifiable, Equatable {
     self.createdAt = createdAt
   }
 
-  static let samples = [
+  static let samples: [ChatMessage] = [
     ChatMessage(text: "Oi! Como posso ajudar?", isFromUser: false),
     ChatMessage(text: "Me explica SwiftUI de forma simples.", isFromUser: true),
   ]

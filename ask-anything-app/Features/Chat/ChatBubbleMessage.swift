@@ -10,11 +10,13 @@ struct ChatBubbleMessage: View {
       }
 
       Text(message.text)
-        .font(.body)
-        .foregroundStyle(message.isFromUser ? .black : .white)
+        .font(AppTypography.body)
+        .foregroundStyle(
+          message.isFromUser ? AppColors.userBubbleText : AppColors.assistantBubbleText
+        )
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
-        .background(message.isFromUser ? .white : .white.opacity(0.14))
+        .background(message.isFromUser ? AppColors.userBubble : AppColors.assistantBubble)
         .clipShape(RoundedRectangle(cornerRadius: 16))
 
       if !message.isFromUser {
@@ -31,5 +33,5 @@ struct ChatBubbleMessage: View {
     }
   }
   .padding()
-  .background(.black)
+  .background(AppColors.background)
 }

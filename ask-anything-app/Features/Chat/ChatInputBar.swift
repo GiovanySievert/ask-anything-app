@@ -13,17 +13,13 @@ struct ChatInputBar: View {
         .autocorrectionDisabled()
         .textContentType(.none)
         .submitLabel(.send)
-        .foregroundStyle(.white)
+        .font(AppTypography.body)
+        .foregroundStyle(AppColors.primaryText)
         .focused($isFocused)
         .onSubmit(onSend)
-        .padding(.horizontal, 16)
+        .padding(.horizontal, AppSpacing.medium)
         .frame(height: 52)
-        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 16))
-        .overlay {
-          RoundedRectangle(cornerRadius: 16)
-            .stroke(.black.opacity(0.18), lineWidth: 1)
-            .allowsHitTesting(false)
-        }
+        .appGlass(in: RoundedRectangle(cornerRadius: 16))
         .contentShape(RoundedRectangle(cornerRadius: 16))
         .onTapGesture { isFocused = true }
 
@@ -32,25 +28,20 @@ struct ChatInputBar: View {
       } label: {
         Image(systemName: "arrow.up")
           .font(.system(size: 17, weight: .bold))
-          .foregroundStyle(.black)
+          .foregroundStyle(AppColors.background)
           .frame(width: 52, height: 44)
-          .glassEffect(
-            .regular
-              .tint(
-                message.isEmpty
-                  ? .white.opacity(0.35)
-                  : .white
-              )
-              .interactive(),
-            in: Circle()
+          .appGlass(
+            in: Circle(),
+            tint: message.isEmpty ? AppColors.sendButtonIdle : AppColors.sendButtonActive,
+            isInteractive: true
           )
-          .clipShape(Circle())
       }
       .disabled(message.isEmpty)
       .animation(.spring(duration: 0.25), value: message.isEmpty)
     }
-    .background(.clear)
-    .padding(.horizontal, 16)
+    .padding(.horizontal, isFocused ? AppSpacing.small : AppSpacing.large)
+    .padding(.bottom, isFocused ? AppSpacing.medium : 0)
+    .animation(.spring(duration: 0.30), value: isFocused)
   }
 }
 
@@ -60,5 +51,5 @@ struct ChatInputBar: View {
 
   ChatInputBar(message: $message, onSend: {}, isFocused: $isFocused)
     .padding()
-    .background(.black)
+    .background(AppColors.background)
 }
