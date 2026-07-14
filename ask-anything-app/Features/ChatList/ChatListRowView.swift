@@ -15,6 +15,7 @@ struct ChatListRowView: View {
         .lineLimit(1)
     }
     .padding(.vertical, 6)
+
   }
 }
 
