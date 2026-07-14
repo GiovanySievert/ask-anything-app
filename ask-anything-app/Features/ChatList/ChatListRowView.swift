@@ -6,11 +6,11 @@ struct ChatListRowView: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 6) {
       Text(chat.title)
-        .font(.headline)
+        .font(AppTypography.title2)
         .foregroundStyle(.primary)
 
       Text(chat.messages.last?.text ?? "Nenhuma mensagem ainda")
-        .font(.subheadline)
+        .font(AppTypography.subheadline)
         .foregroundStyle(.secondary)
         .lineLimit(1)
     }
