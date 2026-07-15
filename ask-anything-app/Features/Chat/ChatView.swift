@@ -30,12 +30,15 @@ struct ChatView: View {
               ScrollView {
                 VStack(spacing: 12) {
                   ForEach(viewModel.messages) { chatMessage in
-                    ChatBubbleMessage(message: chatMessage)
-                      .frame(maxWidth: .infinity, alignment: .trailing)
-                      .id(chatMessage.id)
-                      .offset(
-                        y: animatedMessageIDs.contains(chatMessage.id) ? 0 : geometry.size.height
-                      )
+                    MessageRow(
+                      message: chatMessage,
+                      isVisible: animatedMessageIDs.contains(chatMessage.id)
+                    ) {
+                      withAnimation(.spring(duration: 0.4)) {
+                        _ = animatedMessageIDs.insert(chatMessage.id)
+                      }
+                    }
+                    .id(chatMessage.id)
                   }
 
                   Color.clear
@@ -47,9 +50,6 @@ struct ChatView: View {
               .scrollIndicators(.hidden)
               .scrollDismissesKeyboard(.interactively)
               .onChange(of: viewModel.messages.count) { _, _ in
-                scrollToMessagesBottom(with: proxy)
-              }
-              .onChange(of: animatedMessageIDs.count) { _, _ in
                 scrollToMessagesBottom(with: proxy)
               }
               .onChange(of: isInputFocused) { _, isFocused in
@@ -102,26 +102,21 @@ struct ChatView: View {
     }
   }
 
-  private func scrollToMessagesBottom(with proxy: ScrollViewProxy) {
-    DispatchQueue.main.async {
-      withAnimation(.spring(duration: 0.3)) {
+  private func scrollToMessagesBottom(with proxy: ScrollViewProxy, animated: Bool = true) {
+    if animated {
+      withAnimation(.easeOut(duration: 0.15)) {
         proxy.scrollTo("messagesBottom", anchor: .bottom)
       }
-    }
-  }
-
-  private func animateMessage(_ message: ChatMessage) {
-    DispatchQueue.main.async {
-      withAnimation(.spring(duration: 0.4)) {
-        animatedMessageIDs = animatedMessageIDs.union([message.id])
-      }
+    } else {
+      proxy.scrollTo("messagesBottom", anchor: .bottom)
     }
   }
 
   private func sendMessage() {
-    guard let sentMessage = viewModel.sendMessage() else { return }
     isInputFocused = false
-    animateMessage(sentMessage)
+    Task {
+      await viewModel.sendMessage()
+    }
   }
 }
 
